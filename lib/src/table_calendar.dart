@@ -273,8 +273,8 @@ class TableCalendar<T> extends StatefulWidget {
 }
 
 class _TableCalendarState<T> extends State<TableCalendar<T>> {
-  PageController _pageController;
-  ValueNotifier<DateTime> _focusedDay;
+  PageController? _pageController;
+  ValueNotifier<DateTime>? _focusedDay;
   late RangeSelectionMode _rangeSelectionMode;
   DateTime? _firstSelectedDay;
 
@@ -289,8 +289,8 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   void didUpdateWidget(TableCalendar<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (_focusedDay.value != widget.focusedDay) {
-      _focusedDay.value = widget.focusedDay;
+    if (_focusedDay?.value != widget.focusedDay) {
+      _focusedDay?.value = widget.focusedDay;
     }
 
     if (_rangeSelectionMode != widget.rangeSelectionMode) {
@@ -304,7 +304,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
   @override
   void dispose() {
-    _focusedDay.dispose();
+    _focusedDay?.dispose();
     super.dispose();
   }
 
@@ -340,7 +340,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   void _onDayTapped(DateTime day) {
-    final isOutside = day.month != _focusedDay.value.month;
+    final isOutside = day.month != _focusedDay?.value?.month;
     if (isOutside && _shouldBlockOutsideDays) {
       return;
     }
@@ -354,23 +354,23 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
     if (_isRangeSelectionOn && widget.onRangeSelected != null) {
       if (_firstSelectedDay == null) {
         _firstSelectedDay = day;
-        widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay.value);
+        widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay?.value);
       } else {
         if (day.isAfter(_firstSelectedDay!)) {
-          widget.onRangeSelected!(_firstSelectedDay, day, _focusedDay.value);
+          widget.onRangeSelected!(_firstSelectedDay, day, _focusedDay?.value);
           _firstSelectedDay = null;
         } else if (day.isBefore(_firstSelectedDay!)) {
-          widget.onRangeSelected!(day, _firstSelectedDay, _focusedDay.value);
+          widget.onRangeSelected!(day, _firstSelectedDay, _focusedDay?.value);
           _firstSelectedDay = null;
         }
       }
     } else {
-      widget.onDaySelected?.call(day, _focusedDay.value);
+      widget.onDaySelected?.call(day, _focusedDay?.value);
     }
   }
 
   void _onDayLongPressed(DateTime day) {
-    final isOutside = day.month != _focusedDay.value.month;
+    final isOutside = day.month != _focusedDay?.value.month;
     if (isOutside && _shouldBlockOutsideDays) {
       return;
     }
@@ -381,7 +381,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
     if (widget.onDayLongPressed != null) {
       _updateFocusOnTap(day);
-      return widget.onDayLongPressed!(day, _focusedDay.value);
+      return widget.onDayLongPressed!(day, _focusedDay?.value);
     }
 
     if (widget.onRangeSelected != null) {
@@ -391,10 +391,10 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
         if (_isRangeSelectionOn) {
           _firstSelectedDay = day;
-          widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay.value);
+          widget.onRangeSelected!(_firstSelectedDay, null, _focusedDay?.value);
         } else {
           _firstSelectedDay = null;
-          widget.onDaySelected?.call(day, _focusedDay.value);
+          widget.onDaySelected?.call(day, _focusedDay?.value);
         }
       }
     }
@@ -402,20 +402,20 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
 
   void _updateFocusOnTap(DateTime day) {
     if (widget.pageJumpingEnabled) {
-      _focusedDay.value = day;
+      _focusedDay?.value = day;
       return;
     }
 
     if (widget.calendarFormat == CalendarFormat.month) {
-      if (_isBeforeMonth(day, _focusedDay.value)) {
-        _focusedDay.value = _firstDayOfMonth(_focusedDay.value);
-      } else if (_isAfterMonth(day, _focusedDay.value)) {
-        _focusedDay.value = _lastDayOfMonth(_focusedDay.value);
+      if (_isBeforeMonth(day, _focusedDay?.value)) {
+        _focusedDay?.value = _firstDayOfMonth(_focusedDay?.value);
+      } else if (_isAfterMonth(day, _focusedDay?.value)) {
+        _focusedDay?.value = _lastDayOfMonth(_focusedDay?.value);
       } else {
-        _focusedDay.value = day;
+        _focusedDay?.value = day;
       }
     } else {
-      _focusedDay.value = day;
+      _focusedDay?.value = day;
     }
   }
 
@@ -428,14 +428,14 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
   }
 
   void _onLeftChevronTap() {
-    _pageController.previousPage(
+    _pageController?.previousPage(
       duration: widget.pageAnimationDuration,
       curve: widget.pageAnimationCurve,
     );
   }
 
   void _onRightChevronTap() {
-    _pageController.nextPage(
+    _pageController?.nextPage(
       duration: widget.pageAnimationDuration,
       curve: widget.pageAnimationCurve,
     );
@@ -447,7 +447,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
       children: [
         if (widget.headerVisible)
           ValueListenableBuilder<DateTime>(
-            valueListenable: _focusedDay,
+            valueListenable: _focusedDay!,
             builder: (context, value, _) {
               return CalendarHeader(
                 headerTitleBuilder: widget.calendarBuilders.headerTitleBuilder,
@@ -479,7 +479,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
               _pageController = pageController;
               widget.onCalendarCreated?.call(pageController);
             },
-            focusedDay: _focusedDay.value,
+            focusedDay: _focusedDay!.value,
             calendarFormat: widget.calendarFormat,
             availableGestures: widget.availableGestures,
             firstDay: widget.firstDay,
@@ -501,7 +501,7 @@ class _TableCalendarState<T> extends State<TableCalendar<T>> {
             sixWeekMonthsEnforced: widget.sixWeekMonthsEnforced,
             onVerticalSwipe: _swipeCalendarFormat,
             onPageChanged: (focusedDay) {
-              _focusedDay.value = focusedDay;
+              _focusedDay?.value = focusedDay;
               widget.onPageChanged?.call(focusedDay);
             },
             dowBuilder: (BuildContext context, DateTime day) {
